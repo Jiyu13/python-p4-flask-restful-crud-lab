@@ -45,7 +45,32 @@ class PlantByID(Resource):
         plant = Plant.query.filter_by(id=id).first().to_dict()
         return make_response(jsonify(plant), 200)
 
+    
+    # 1. update a route
+    def patch(self, id):
+        plant = Plant.query.filter_by(id=id).first()
+        for attr in request.get_json():
+            setattr(plant, attr, request.get_json()[attr])
+        db.session.add(plant)
+        db.session.commit()
+        response = make_response(plant.to_dict(), 200)
+        return response
+
+    # 2. destory a route
+    def delete(self, id):
+        plant = Plant.query.filter_by(id=id).first()
+        db.session.delete(plant)
+        db.session.commit()
+
+        # response_body = {
+        #     "delete successful": True,
+        #     "message": "This plant has been removed."
+        # }
+        response = make_response()
+        return response
+
 api.add_resource(PlantByID, '/plants/<int:id>')
+
         
 
 if __name__ == '__main__':
